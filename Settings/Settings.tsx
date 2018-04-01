@@ -1,9 +1,20 @@
 import * as React from 'react'
-import { View, Text, StyleSheet } from 'react-native'
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native'
+import { auth } from 'firebase'
 
 export default class Settings extends React.Component<{}> {
-  render(){
-    return <View style={styles.container}><Text>Settings</Text></View>
+  signOut = () => {
+    auth().signOut();
+  }
+
+  render() {
+    return (
+      <View style={styles.container}>
+        <TouchableOpacity onPress={() => this.signOut()}>
+          <Text>Log out</Text>
+        </TouchableOpacity>
+      </View>
+    )
   }
 }
 

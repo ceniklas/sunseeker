@@ -15,8 +15,6 @@ const firebaseConfig = {
 
 firebase.initializeApp(firebaseConfig);
 
-
-
 async function logIn() {
   const { type, token } = await Facebook.logInWithReadPermissionsAsync(
     '2041975362707985',

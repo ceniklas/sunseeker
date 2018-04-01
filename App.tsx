@@ -21,7 +21,7 @@ export default class App extends React.Component<{}> {
   render() {
     return (
       <View style={{flex: 1}}>
-        <StatusBar barStyle="light-content" /> 
+        <StatusBar barStyle="light-content" />
         {this.state.user ? <SNavigator/> : <Login onLoginSuccess={user => this.setState({ user })} />}
       </View>
     )
