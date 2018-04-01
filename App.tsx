@@ -4,9 +4,16 @@ import Settings from './Settings/Settings'
 import Home from './Home/Home'
 import Login from './Login'
 import * as React from 'react'
-import { StyleSheet, Text, View, StatusBar } from 'react-native'
+import { StyleSheet, Text, View, StatusBar, YellowBox } from 'react-native'
 import { TabNavigator, TabBarBottom, StackNavigator } from 'react-navigation'
 import Ionicons from 'react-native-vector-icons/Ionicons'
+
+YellowBox.ignoreWarnings([
+  'Warning: componentWillMount is deprecated',
+  'Warning: componentWillReceiveProps is deprecated',
+  'Warning: componentWillUpdate is deprecated',
+  'Module RCTImageLoader requires',
+])
 
 export default class App extends React.Component<{}> {
   state = { user: null }
