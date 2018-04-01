@@ -15,15 +15,23 @@ YellowBox.ignoreWarnings([
   'Module RCTImageLoader requires',
 ])
 
+export const UserContext = React.createContext<any>()
+
 export default class App extends React.Component<{}> {
   state = { user: null }
 
   render() {
+    const providerValue = {
+      user: this.state.user,
+      logOut: () => this.setState({user: null})
+    }
     return (
-      <View style={{flex: 1}}>
-        <StatusBar barStyle="light-content" />
-        {this.state.user ? <SNavigator/> : <Login onLoginSuccess={user => this.setState({ user })} />}
-      </View>
+      <UserContext.Provider value={providerValue}>
+        <View style={{flex: 1}}>
+          <StatusBar barStyle="light-content" />
+          {this.state.user ? <SNavigator/> : <Login onLoginSuccess={user => this.setState({ user })} />}
+        </View>
+      </UserContext.Provider>
     )
   }
 }
