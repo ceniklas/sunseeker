@@ -8,11 +8,11 @@ interface IPlant {
   shared?: boolean
 }
 const plants: IPlant[] = [
-  {id: 0, name: 'Charlie', uri: 'https://flowermag.com/wp-content/uploads/2017/08/dahlia.jpg'},
-  {id: 1, name: 'Steven', uri: 'https://flowermag.com/wp-content/uploads/2017/08/dahlia.jpg', shared: true},
-  {id: 2, name: 'Sven', uri: 'https://flowermag.com/wp-content/uploads/2017/08/dahlia.jpg'},
-  {id: 3, name: 'Torsken', uri: 'https://flowermag.com/wp-content/uploads/2017/08/dahlia.jpg'},
-  {id: 4, name: 'Laxen', uri: 'https://flowermag.com/wp-content/uploads/2017/08/dahlia.jpg'},
+  {id: 0, name: 'Charlie', uri: 'https://i.imgur.com/ijtflEi.png'},
+  {id: 1, name: 'Steven', uri: 'https://i.imgur.com/ijtflEi.png', shared: true},
+  {id: 2, name: 'Sven', uri: 'https://i.imgur.com/ijtflEi.png'},
+  {id: 3, name: 'Torsken', uri: 'https://i.imgur.com/ijtflEi.png'},
+  {id: 4, name: 'Laxen', uri: 'https://i.imgur.com/ijtflEi.png'},
 ]
 
 export default class Home extends React.Component<{}> {
