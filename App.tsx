@@ -9,12 +9,13 @@ import { TabNavigator, TabBarBottom, StackNavigator } from 'react-navigation'
 import Ionicons from 'react-native-vector-icons/Ionicons'
 
 export default class App extends React.Component<{}> {
+  state = { user: null }
+
   render() {
-    let user
     return (
       <View style={{flex: 1}}>
         <StatusBar barStyle="light-content" /> 
-        {user ? <SNavigator/> : <Login/>}
+        {this.state.user ? <SNavigator/> : <Login onLoginSuccess={user => this.setState({ user })} />}
       </View>
     )
   }

@@ -23,7 +23,7 @@ async function logIn() {
     { permissions: ['public_profile'] },
   );
 
-  if (type === 'success') {
+  if (type === 'success' && token) {
     // Build Firebase credential with the Facebook access token.
     const credential = firebase.auth.FacebookAuthProvider.credential(token);
 
@@ -35,7 +35,9 @@ async function logIn() {
 
     // Get the user's name using Facebook's Graph API
     const response = await fetch(
-      `https://graph.facebook.com/me?access_token=${token}`);
+      `https://graph.facebook.com/me?access_token=${token}`
+    );
+    
     Alert.alert(
       'Logged in!',
       `Hi ${(await response.json()).name}!`,
@@ -43,16 +45,23 @@ async function logIn() {
   }
 }
 
-export default class Login extends React.Component<{}> {
+namespace Login {
+  export interface Props {
+    onLoginSuccess: (user: any) => void
+  }
+}
+export default class Login extends React.Component<Login.Props> {
   state = { isAuthenticated: 'darkred' }
 
-  constructor(props) {
-    super(props);
+  constructor(props:any) {
+    super(props)
+    const { onLoginSuccess } = this.props
 
     // Listen for authentication state to change.
     firebase.auth().onAuthStateChanged((user) => {
       if (user != null) {
-        this.setState({ isAuthenticated: 'green' });
+        this.setState({ isAuthenticated: 'green' })
+        onLoginSuccess(user)
       }
     });
   }
