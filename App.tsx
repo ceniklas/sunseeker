@@ -1,4 +1,4 @@
-import Schedule from './Schedule/Schedule'
+import Friends from './Friends/Friends'
 import Add from './Add/Add'
 import Settings from './Settings/Settings'
 import Home from './Home/Home'
@@ -10,10 +10,11 @@ import Ionicons from 'react-native-vector-icons/Ionicons'
 
 export default class App extends React.Component<{}> {
   render() {
+    let user
     return (
       <View style={{flex: 1}}>
         <StatusBar barStyle="light-content" /> 
-        <Login/>
+        {user ? <SNavigator/> : <Login/>}
       </View>
     )
   }
@@ -21,9 +22,9 @@ export default class App extends React.Component<{}> {
 
 const TNavigator = TabNavigator({
   Home: { screen: Home },
-  Settings: { screen: Settings },
   Add: { screen: Add },
-  Schedule: { screen: Schedule }
+  Friends: { screen: Friends },
+  Settings: { screen: Settings },
 }, {
   navigationOptions: ({ navigation }) => ({
     headerTitle: navigation.state.routeName,
@@ -36,8 +37,8 @@ const TNavigator = TabNavigator({
         iconName = `ios-options${focused ? '' : '-outline'}`
       } else if (routeName === 'Add') {
         iconName = `ios-add-circle${focused ? '' : '-outline'}`
-      }else if (routeName === 'Schedule') {
-        iconName = `ios-calendar${focused ? '' : '-outline'}`
+      }else if (routeName === 'Friends') {
+        iconName = `ios-walk${focused ? '' : '-outline'}`
       }
       return iconName.length ? <Ionicons name={iconName} size={25} color={tintColor || ''} /> : null
     },

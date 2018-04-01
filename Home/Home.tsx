@@ -5,21 +5,22 @@ interface IPlant {
   id: number
   name: string
   uri: string
+  shared?: boolean
 }
 const plants: IPlant[] = [
   {id: 0, name: 'Charlie', uri: 'https://flowermag.com/wp-content/uploads/2017/08/dahlia.jpg'},
-  {id: 1, name: 'Charlie', uri: 'https://flowermag.com/wp-content/uploads/2017/08/dahlia.jpg'},
-  {id: 2, name: 'Charlie', uri: 'https://flowermag.com/wp-content/uploads/2017/08/dahlia.jpg'},
-  {id: 3, name: 'Charlie', uri: 'https://flowermag.com/wp-content/uploads/2017/08/dahlia.jpg'},
-  {id: 4, name: 'Charlie', uri: 'https://flowermag.com/wp-content/uploads/2017/08/dahlia.jpg'},
+  {id: 1, name: 'Steven', uri: 'https://flowermag.com/wp-content/uploads/2017/08/dahlia.jpg', shared: true},
+  {id: 2, name: 'Sven', uri: 'https://flowermag.com/wp-content/uploads/2017/08/dahlia.jpg'},
+  {id: 3, name: 'Torsken', uri: 'https://flowermag.com/wp-content/uploads/2017/08/dahlia.jpg'},
+  {id: 4, name: 'Laxen', uri: 'https://flowermag.com/wp-content/uploads/2017/08/dahlia.jpg'},
 ]
 
 export default class Home extends React.Component<{}> {
   render(){
     return (
       <View style={styles.container}>
-        {plants.map(plant => (<Plant key={plant.id} name={plant.name} uri={plant.uri}/>))}
-        <Text>Home</Text>
+        {plants.map(plant => (<Plant key={plant.id} name={plant.name} uri={plant.uri} shared={plant.shared}/>))}
+        <Plant/>
       </View>
     )
   }
@@ -27,12 +28,11 @@ export default class Home extends React.Component<{}> {
 
 const styles = StyleSheet.create({
   container: {
-    paddingTop: 20,
     flex: 1,
     flexDirection: 'row',
+    justifyContent: 'center',
     backgroundColor: '#fff',
     alignItems: 'center',
-    justifyContent: 'center',
     flexWrap: 'wrap'
   },
 })
