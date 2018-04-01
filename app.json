@@ -1,5 +1,6 @@
 {
   "expo": {
+    "barStyle": "light-content",
     "sdkVersion": "26.0.0",
     "packagerOpts": {
       "sourceExts": ["ts", "tsx"],
