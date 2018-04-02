@@ -1,8 +1,9 @@
 import Plant from './Plant';
 import PlantClass from '../Classes/Plant'
 import * as React from 'react';
-import { View, Text, StyleSheet } from 'react-native'
+import { View, Text, StyleSheet, ScrollView } from 'react-native'
 import firebase from 'firebase';
+import { Chance } from 'chance';
 
 namespace Home {
   export interface State {
@@ -34,11 +35,12 @@ export default class Home extends React.Component<{}, Home.State> {
   }
 
   addPlant = () => {
+    const name = new Chance().name_prefix() + " " + new Chance().animal() + " " + new Chance().name_suffix()
     const userId = firebase.auth().currentUser.uid
     const ref = firebase.database().ref(`/${userId}/plants`)
     const res = ref.push(
     {
-      name: 'Mordus',
+      name
     })
 
     const ref2 = firebase.database().ref(`/${userId}/plants/${res.key}/images`)
@@ -51,10 +53,12 @@ export default class Home extends React.Component<{}, Home.State> {
   render() {
     return (
       this.state.plants !== [] ? 
-      <View style={styles.container}> 
-        {this.state.plants.map(plant => (<Plant key={plant.id} name={plant.name} uri={plant.coverPhotoUri} shared={plant.shared}/>))}
-        <Plant onPress={() => this.addPlant()}/>
-      </View> 
+      <ScrollView>
+        <View style={styles.container}> 
+          {this.state.plants.map(plant => (<Plant key={plant.id} name={plant.name} uri={plant.coverPhotoUri} shared={plant.shared}/>))}
+          <Plant onPress={() => this.addPlant()}/>
+        </View> 
+      </ScrollView>
       : 
       <View style={styles.containerLoading}/>
     )
