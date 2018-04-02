@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { Text, View, TouchableOpacity, Alert } from 'react-native';
+import { Text, View, TouchableOpacity, Alert, StyleSheet, ImageBackground } from 'react-native';
 import firebase from 'firebase';
 import { Facebook } from 'expo';
 
@@ -49,8 +49,6 @@ namespace Login {
   }
 }
 export default class Login extends React.Component<Login.Props> {
-  state = { isAuthenticated: 'darkred' }
-
   constructor(props:any) {
     super(props)
     const { onLoginSuccess } = this.props
@@ -58,17 +56,34 @@ export default class Login extends React.Component<Login.Props> {
     // Listen for authentication state to change.
     firebase.auth().onAuthStateChanged((user) => {
       if (user != null) {
-        this.setState({ isAuthenticated: 'green' })
         onLoginSuccess(user)
       }
     });
   }
 
   render() {
-    return <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: this.state.isAuthenticated }}>
-      <TouchableOpacity onPress={() => logIn()}>
-        <Text>Login breh</Text>
-      </TouchableOpacity>
-    </View>
+    return (
+      <ImageBackground source={require('./loginBackground.png')} style={{width: '100%', flex: 1}}>
+        <View style={{ position: 'absolute', bottom: 100, width: '100%', alignItems: 'center', justifyContent: 'flex-end'}}>
+          <TouchableOpacity onPress={() => logIn()} style={styles.loginButton}>
+            <Text style={styles.buttonText}>Login</Text>
+          </TouchableOpacity>
+        </View>
+      </ImageBackground>
+    )
   }
 }
+
+const styles = StyleSheet.create({
+  buttonText: {
+    fontSize: 17
+  },
+  loginButton: {
+    backgroundColor: 'white',
+    width: 220,
+    height: 50,
+    borderRadius: 25,
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+})
