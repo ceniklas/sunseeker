@@ -1,24 +1,36 @@
 import Plant from './Plant';
+import PlantClass from '../Classes/Plant'
 import * as React from 'react';
 import { View, Text, StyleSheet } from 'react-native'
 import firebase from 'firebase';
 
-interface IPlant {
-  id: number
-  name: string
-  uri: string
-  shared?: boolean
+namespace Home {
+  export interface State {
+    plants:PlantClass[]
+  }
 }
-
-export default class Home extends React.Component<{}> {
-  state: any = { plants: {} }
-
+export default class Home extends React.Component<{}, Home.State> {
   constructor(props) {
     super(props);
+    this.state = { plants: [] }
+    
+    this.fetchPlantData()
+  }
 
+  fetchPlantData = () => {
     const userId = firebase.auth().currentUser.uid
     const ref = firebase.database().ref(`/${userId}/plants`)
-    ref.on('value', plants => this.setState({ plants: plants.val() }))
+    ref.on('value', plants => {
+      if(!plants) {
+        return
+      }
+      const plantData: PlantClass[] = []
+      const plantObject = plants.val()
+      for (let item in plantObject) {
+        plantData.push(new PlantClass({...plantObject[item], id: item}))
+      }
+      this.setState({ plants: plantData })
+    })
   }
 
   addPlant = () => {
@@ -26,7 +38,7 @@ export default class Home extends React.Component<{}> {
     const ref = firebase.database().ref(`/${userId}/plants`)
     const res = ref.push(
     {
-      name: 'Petrus',
+      name: 'Mordus',
     })
 
     const ref2 = firebase.database().ref(`/${userId}/plants/${res.key}/images`)
@@ -37,15 +49,10 @@ export default class Home extends React.Component<{}> {
   }
 
   render() {
-    const plants = []
-    for (let prop in this.state.plants) {
-      const plant = this.state.plants[prop]
-      plants.push(<Plant key={plant.id} name={plant.name} uri={plant.images[Object.keys(plant.images)[0]].uri} shared={plant.shared}/>)
-    }
     return (
       this.state.plants !== [] ? 
-      <View style={styles.container}>
-        {plants} 
+      <View style={styles.container}> 
+        {this.state.plants.map(plant => (<Plant key={plant.id} name={plant.name} uri={plant.coverPhotoUri} shared={plant.shared}/>))}
         <Plant onPress={() => this.addPlant()}/>
       </View> 
       : 
