@@ -16,14 +16,19 @@ export default class Plant extends React.Component<Plant.Props, any> {
     return name || uri ? (
        
         <View style={styles.container}>
-          <TouchableOpacity onPress={onPress}>
+          <TouchableOpacity style={styles.pictureContainer} onPress={onPress}>
             <Image
               style={styles.picture}
               source={{uri}}
             />
           </TouchableOpacity>
           {shared ? <View style={styles.shared}><Ionicons name='ios-person' size={15} color='#ffffff' /></View> : null}
-          <Text style={styles.name}>{name}</Text>
+          <Text
+            style={styles.name}
+            numberOfLines={2}
+          >
+            {name}
+          </Text>
         </View>
       
     ) : (
@@ -56,15 +61,19 @@ const styles = StyleSheet.create({
   },
   name: {
     color: '#122C49',
+    textAlign: 'center',
     marginTop: 8
+  },
+  pictureContainer: {
+    backgroundColor: '#26405A',
+    borderRadius: size/2,
+    borderWidth: 2,
+    borderColor: '#26405A',
   },
   picture: {
     height: size,
     width: size,
-    backgroundColor: '#26405A',
     borderRadius: size/2,
-    borderWidth: 2,
-    borderColor: '#26405A'
   },
   add: {
     height: size,
@@ -74,9 +83,11 @@ const styles = StyleSheet.create({
     borderColor: '#26405A',
     borderStyle: 'dashed',
     alignItems: 'center',
-    justifyContent: 'center'
+    justifyContent: 'center',
   },
   container: {
+    width: size+size/6,
+    height: size+size/4,
     margin: size/6,
     alignItems: 'center',
   },
