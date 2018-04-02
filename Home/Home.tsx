@@ -1,12 +1,15 @@
 import Plant from './Plant';
 import * as React from 'react';
 import { View, Text, StyleSheet } from 'react-native'
+import firebase from 'firebase';
+
 interface IPlant {
   id: number
   name: string
   uri: string
   shared?: boolean
 }
+
 const plants: IPlant[] = [
   {id: 0, name: 'Charlie', uri: 'https://i.imgur.com/ijtflEi.png'},
   {id: 1, name: 'Steven', uri: 'https://i.imgur.com/ijtflEi.png', shared: true},
@@ -16,12 +19,30 @@ const plants: IPlant[] = [
 ]
 
 export default class Home extends React.Component<{}> {
-  render(){
+  state: any = { plants: {} }
+
+  constructor(props) {
+    super(props);
+
+    const userId = firebase.auth().currentUser.uid
+    const ref = firebase.database().ref(`/${userId}/plants`)
+    ref.on('value', plants => this.setState({ plants: plants.val() }))
+  }
+
+  render() {
+    const plants = []
+    for (let prop in this.state.plants) {
+      const plant = this.state.plants[prop]
+      plants.push(<Plant key={plant.id} name={plant.name} uri={plant.images[Object.keys(plant.images)[0]].uri} shared={plant.shared}/>)
+    }
     return (
+      this.state.plants !== [] ? 
       <View style={styles.container}>
-        {plants.map(plant => (<Plant key={plant.id} name={plant.name} uri={plant.uri} shared={plant.shared}/>))}
+        {plants} 
         <Plant/>
-      </View>
+      </View> 
+      : 
+      <View style={styles.containerLoading}/>
     )
   }
 }
@@ -35,4 +56,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flexWrap: 'wrap'
   },
+  containerLoading: {
+    flex: 1,
+    justifyContent: 'center',
+    backgroundColor: '#fff',
+    alignItems: 'center',
+  }
 })
