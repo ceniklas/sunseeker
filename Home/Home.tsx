@@ -10,14 +10,6 @@ interface IPlant {
   shared?: boolean
 }
 
-const plants: IPlant[] = [
-  {id: 0, name: 'Charlie', uri: 'https://i.imgur.com/ijtflEi.png'},
-  {id: 1, name: 'Steven', uri: 'https://i.imgur.com/ijtflEi.png', shared: true},
-  {id: 2, name: 'Sven', uri: 'https://i.imgur.com/ijtflEi.png'},
-  {id: 3, name: 'Torsken', uri: 'https://i.imgur.com/ijtflEi.png'},
-  {id: 4, name: 'Laxen', uri: 'https://i.imgur.com/ijtflEi.png'},
-]
-
 export default class Home extends React.Component<{}> {
   state: any = { plants: {} }
 
@@ -27,6 +19,21 @@ export default class Home extends React.Component<{}> {
     const userId = firebase.auth().currentUser.uid
     const ref = firebase.database().ref(`/${userId}/plants`)
     ref.on('value', plants => this.setState({ plants: plants.val() }))
+  }
+
+  addPlant = () => {
+    const userId = firebase.auth().currentUser.uid
+    const ref = firebase.database().ref(`/${userId}/plants`)
+    const res = ref.push(
+    {
+      name: 'Petrus',
+    })
+
+    const ref2 = firebase.database().ref(`/${userId}/plants/${res.key}/images`)
+    const res2 = ref2.push(
+    {
+      uri: "https://i.imgur.com/ijtflEi.png"
+    })
   }
 
   render() {
@@ -39,7 +46,7 @@ export default class Home extends React.Component<{}> {
       this.state.plants !== [] ? 
       <View style={styles.container}>
         {plants} 
-        <Plant/>
+        <Plant onPress={() => this.addPlant()}/>
       </View> 
       : 
       <View style={styles.containerLoading}/>
