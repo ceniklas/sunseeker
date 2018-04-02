@@ -13,6 +13,7 @@ YellowBox.ignoreWarnings([
   'Warning: componentWillReceiveProps is deprecated',
   'Warning: componentWillUpdate is deprecated',
   'Module RCTImageLoader requires',
+  'Setting a timer',
 ])
 
 export const UserContext = React.createContext<any>()
