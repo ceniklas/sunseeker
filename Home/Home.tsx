@@ -1,3 +1,4 @@
+import PlantList from './PlantList';
 import Plant from './Plant';
 import PlantClass from '../Classes/Plant'
 import * as React from 'react';
@@ -52,15 +53,7 @@ export default class Home extends React.Component<{}, Home.State> {
 
   render() {
     return (
-      this.state.plants !== [] ? 
-      <ScrollView>
-        <View style={styles.container}> 
-          {this.state.plants.map(plant => (<Plant key={plant.id} name={plant.name} uri={plant.coverPhotoUri} shared={plant.shared}/>))}
-          <Plant onPress={() => this.addPlant()}/>
-        </View> 
-      </ScrollView>
-      : 
-      <View style={styles.containerLoading}/>
+      <PlantList plants={this.state.plants} addPlant={this.addPlant} onSelect={()=>{ /**/ }}/>
     )
   }
 }
