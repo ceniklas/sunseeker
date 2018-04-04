@@ -1,13 +1,26 @@
 import * as React from 'react'
 import { AuthSession, WebBrowser, Constants } from 'expo'
 import { Text, View, TouchableOpacity, Alert, StyleSheet, ImageBackground, Linking, } from 'react-native'
+import { Mutation } from 'react-apollo'
+import gql from 'graphql-tag'
 
+const background = require('./loginBackground.png')
 async function logIn() {
   
 }
 const auth0ClientId = 'xTnZz0tK0K3EslBH72Wfdb4BrZ9Wm_oF'
 const auth0Domain = 'https://sunseeker.eu.auth0.com'
+
 export const redirect_uri = `${Constants.linkingUri}/redirect`
+
+const CREATE_USER = gql`
+mutation createUser($idToken: String!) {
+  createUser(authProvider:{auth0:{idToken: $idToken}}){
+    auth0UserId
+  }
+}
+`
+
 const toQueryString = (params: any) => {
   return '?' + Object.entries(params)
     .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`)
@@ -20,28 +33,26 @@ namespace Login {
   }
 }
 export default class Login extends React.Component<Login.Props, any> {
+  private _token: string
   constructor(props:any) {
     super(props)
     const { onLoginSuccess } = this.props
-    this.state = {result: null}
-    // this.loginWithAuth0()
+    this.state = {result: null, token: null}
   }
-
   loginWithAuth0 = async () => {
-    const redirectUrl = AuthSession.getRedirectUrl();
-    console.log(`Redirect URL (add this to Auth0): ${redirectUrl}`);
+    const redirectUrl = AuthSession.getRedirectUrl()
+    console.log(`Redirect URL (add this to Auth0): ${redirectUrl}`)
     const result = await AuthSession.startAsync({
       authUrl: `${auth0Domain}/authorize` + toQueryString({
         client_id: auth0ClientId,
-        response_type: 'code',
+        response_type: 'token',
         scope: 'openid name',
         redirect_uri: redirectUrl,
       }),
     });
 
-    console.log(result);
     if (result.type === 'success') {
-      this.handleParams(result.params);
+      return this.handleParams(result.params);
     }
   }
   handleParams = (responseObj: any) => {
@@ -51,20 +62,31 @@ export default class Login extends React.Component<Login.Props, any> {
       return;
     }
     this.setState({result: responseObj})
-    const encodedToken = responseObj.id_token;
-    
-    
+    const encodedToken = responseObj.id_token
+    return encodedToken
   }
   render() {
-    this.loginWithAuth0()
     return (
-      <ImageBackground source={require('./loginBackground.png')} style={{width: '100%', flex: 1}}>
-        <View style={{ position: 'absolute', bottom: 100, width: '100%', alignItems: 'center', justifyContent: 'flex-end'}}>
-          <Text>{JSON.stringify(this.state.result)}</Text>
-          <TouchableOpacity onPress={() => logIn()} style={styles.loginButton}>
-            <Text style={styles.buttonText}>Login</Text>
-          </TouchableOpacity>
-        </View>
+      <ImageBackground source={background} style={{width: '100%', flex: 1}}>
+        <Mutation 
+          mutation={CREATE_USER} 
+          onCompleted={data => this.props.onLoginSuccess(this._token)}
+          onError={error => this.props.onLoginSuccess(this._token)}>
+          {(createPlant, {error, data}) => {
+            const login = async () => {
+              this._token = await this.loginWithAuth0()
+              createPlant({variables: {idToken: this._token}})
+            }
+            return (
+              <View style={{ position: 'absolute', bottom: 100, width: '100%', alignItems: 'center', justifyContent: 'flex-end'}}>
+                <Text>{JSON.stringify(this.state.result)}</Text>
+                <TouchableOpacity onPress={() => login()} style={styles.loginButton}>
+                  <Text style={styles.buttonText}>Login</Text>
+                </TouchableOpacity>
+              </View>
+            )
+          }}
+        </Mutation>
       </ImageBackground>
     )
   }
