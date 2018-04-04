@@ -1,46 +1,17 @@
 import * as React from 'react'
-import { Text, View, TouchableOpacity, Alert, StyleSheet, ImageBackground } from 'react-native';
-import firebase from 'firebase';
-import { Facebook } from 'expo';
-
-// Initialize Firebase
-const firebaseConfig = {
-  apiKey: "AIzaSyDujWsYdKDZZ-zUdO_ZVzh5lf8aR9N-Jf8",
-  authDomain: "sunseeker-firebase.firebaseapp.com",
-  databaseURL: "https://sunseeker-firebase.firebaseio.com",
-  projectId: "sunseeker-firebase",
-  storageBucket: "sunseeker-firebase.appspot.com",
-  messagingSenderId: "721552557682"
-};
-
-firebase.initializeApp(firebaseConfig);
+import { AuthSession, WebBrowser, Constants } from 'expo'
+import { Text, View, TouchableOpacity, Alert, StyleSheet, ImageBackground, Linking, } from 'react-native'
 
 async function logIn() {
-  const { type, token } = await Facebook.logInWithReadPermissionsAsync(
-    '2041975362707985',
-    { permissions: ['public_profile'] },
-  );
-
-  if (type === 'success' && token) {
-    // Build Firebase credential with the Facebook access token.
-    const credential = firebase.auth.FacebookAuthProvider.credential(token);
-
-    // Sign in with credential from the Facebook user.
-    firebase.auth().signInWithCredential(credential).catch((error) => {
-      console.error(error);
-    });
-
-
-    // Get the user's name using Facebook's Graph API
-    const response = await fetch(
-      `https://graph.facebook.com/me?access_token=${token}`
-    );
-    
-    Alert.alert(
-      'Logged in!',
-      `Hi ${(await response.json()).name}!`,
-    );
-  }
+  
+}
+const auth0ClientId = 'xTnZz0tK0K3EslBH72Wfdb4BrZ9Wm_oF'
+const auth0Domain = 'https://sunseeker.eu.auth0.com'
+export const redirect_uri = `${Constants.linkingUri}/redirect`
+const toQueryString = (params: any) => {
+  return '?' + Object.entries(params)
+    .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`)
+    .join('&');
 }
 
 namespace Login {
@@ -48,23 +19,48 @@ namespace Login {
     onLoginSuccess: (user: any) => void
   }
 }
-export default class Login extends React.Component<Login.Props> {
+export default class Login extends React.Component<Login.Props, any> {
   constructor(props:any) {
     super(props)
     const { onLoginSuccess } = this.props
-
-    // Listen for authentication state to change.
-    firebase.auth().onAuthStateChanged((user) => {
-      if (user != null) {
-        onLoginSuccess(user)
-      }
-    });
+    this.state = {result: null}
+    // this.loginWithAuth0()
   }
 
+  loginWithAuth0 = async () => {
+    const redirectUrl = AuthSession.getRedirectUrl();
+    console.log(`Redirect URL (add this to Auth0): ${redirectUrl}`);
+    const result = await AuthSession.startAsync({
+      authUrl: `${auth0Domain}/authorize` + toQueryString({
+        client_id: auth0ClientId,
+        response_type: 'code',
+        scope: 'openid name',
+        redirect_uri: redirectUrl,
+      }),
+    });
+
+    console.log(result);
+    if (result.type === 'success') {
+      this.handleParams(result.params);
+    }
+  }
+  handleParams = (responseObj: any) => {
+    if (responseObj.error) {
+      Alert.alert('Error', responseObj.error_description
+        || 'something went wrong while logging in');
+      return;
+    }
+    this.setState({result: responseObj})
+    const encodedToken = responseObj.id_token;
+    
+    
+  }
   render() {
+    this.loginWithAuth0()
     return (
       <ImageBackground source={require('./loginBackground.png')} style={{width: '100%', flex: 1}}>
         <View style={{ position: 'absolute', bottom: 100, width: '100%', alignItems: 'center', justifyContent: 'flex-end'}}>
+          <Text>{JSON.stringify(this.state.result)}</Text>
           <TouchableOpacity onPress={() => logIn()} style={styles.loginButton}>
             <Text style={styles.buttonText}>Login</Text>
           </TouchableOpacity>

@@ -7,6 +7,19 @@ import * as React from 'react'
 import { StyleSheet, Text, View, StatusBar, YellowBox } from 'react-native'
 import { TabNavigator, TabBarBottom, StackNavigator } from 'react-navigation'
 import Ionicons from 'react-native-vector-icons/Ionicons'
+import { ApolloClient } from 'apollo-client';
+import { HttpLink } from 'apollo-link-http';
+import { InMemoryCache } from 'apollo-cache-inmemory'
+import { ApolloProvider } from 'react-apollo'
+
+const client = new ApolloClient({
+  // By default, this client will send queries to the
+  //  `/graphql` endpoint on the same host
+  // Pass the configuration option { uri: YOUR_GRAPHQL_API_URL } to the `HttpLink` to connect
+  // to a different host
+  link: new HttpLink({ uri: 'https://api.graph.cool/simple/v1/cjfjy3vcr0xqh0150dzseahxh' }),
+  cache: new InMemoryCache(),
+})
 
 YellowBox.ignoreWarnings([
   'Warning: componentWillMount is deprecated',
@@ -19,7 +32,7 @@ YellowBox.ignoreWarnings([
 export const UserContext = React.createContext<any>()
 
 export default class App extends React.Component<{}> {
-  state = { user: null }
+  state = { user: "null" }
 
   render() {
     const providerValue = {
@@ -30,7 +43,9 @@ export default class App extends React.Component<{}> {
       <UserContext.Provider value={providerValue}>
         <View style={{flex: 1}}>
           <StatusBar barStyle="light-content" />
-          {this.state.user ? <SNavigator/> : <Login onLoginSuccess={user => this.setState({ user })} />}
+            <ApolloProvider client={client}>
+              {this.state.user ? <SNavigator/> : <Login onLoginSuccess={user => this.setState({ user })} />}
+            </ApolloProvider>
         </View>
       </UserContext.Provider>
     )

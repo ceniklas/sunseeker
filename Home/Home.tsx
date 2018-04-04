@@ -1,10 +1,42 @@
-import PlantList from './PlantList';
-import Plant from './Plant';
+import PlantList from './PlantList'
+import Plant from './Plant'
 import PlantClass from '../Classes/Plant'
-import * as React from 'react';
+import * as React from 'react'
 import { View, Text, StyleSheet, ScrollView } from 'react-native'
-import firebase from 'firebase';
-import { Chance } from 'chance';
+import firebase from 'firebase'
+import { Chance } from 'chance'
+import gql from 'graphql-tag'
+import { Query, Mutation } from 'react-apollo'
+
+const GET_PLANTS = gql`
+  query getPlants{
+    User(auth0UserId: "facebook|10213046703495249") {
+      id
+      plants{
+        id
+        name
+        sharedUsers{
+          id
+        }
+        moments{
+          imageUri
+          description
+          tags
+        }
+      }
+    }
+  }
+`
+const CREATE_PLANT = gql`
+  mutation createNewPlant($moments: [PlantmomentsMoment!], $name: String!, $userId: ID!) {
+    createPlant(moments: $moments, name: $name, userId: $userId) {
+      id
+      moments {
+        id
+      }
+    }
+  }
+`
 
 namespace Home {
   export interface State {
@@ -15,45 +47,40 @@ export default class Home extends React.Component<{}, Home.State> {
   constructor(props) {
     super(props);
     this.state = { plants: [] }
-    
-    this.fetchPlantData()
-  }
-
-  fetchPlantData = () => {
-    const userId = firebase.auth().currentUser.uid
-    const ref = firebase.database().ref(`/${userId}/plants`)
-    ref.on('value', plants => {
-      if(!plants) {
-        return
-      }
-      const plantData: PlantClass[] = []
-      const plantObject = plants.val()
-      for (let item in plantObject) {
-        plantData.push(new PlantClass({...plantObject[item], id: item}))
-      }
-      this.setState({ plants: plantData })
-    })
-  }
-
-  addPlant = () => {
-    const name = new Chance().name_prefix() + " " + new Chance().animal() + " " + new Chance().name_suffix()
-    const userId = firebase.auth().currentUser.uid
-    const ref = firebase.database().ref(`/${userId}/plants`)
-    const res = ref.push(
-    {
-      name
-    })
-
-    const ref2 = firebase.database().ref(`/${userId}/plants/${res.key}/images`)
-    const res2 = ref2.push(
-    {
-      uri: "https://i.imgur.com/ijtflEi.png"
-    })
   }
 
   render() {
+    const plants: PlantClass[] = []
     return (
-      <PlantList plants={this.state.plants} addPlant={this.addPlant} onSelect={()=>{ /**/ }}/>
+      <Query query={GET_PLANTS}>
+          {({ loading, error, data }) => {
+            if(data && data.User) {
+              plants.splice(0, plants.length)
+              data.User.plants.map((plant: any) => {
+                plants.push(new PlantClass(plant))
+              })
+            }
+            return (
+              <Mutation mutation={CREATE_PLANT} refetchQueries={() => ['getPlants']}>
+                {(createPlant, {data: plantData}) => {
+                  console.log(plantData)
+                  const addPlant = () => {
+                    createPlant({variables: { 
+                      name: 'Pedro', 
+                      moments: [{description: 'Plant created! Hurray!'}],
+                      userId: 'cjfl3csfh802i0177m1v8n9qp' 
+                    }})
+                  }
+                  return (
+                    <PlantList plants={plants} addPlant={addPlant} onSelect={()=>{ /**/ }}/>
+                  )
+                }}
+              </Mutation>
+            )
+          }}
+        
+      </Query>
+      
     )
   }
 }
