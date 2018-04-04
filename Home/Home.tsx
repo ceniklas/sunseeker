@@ -44,7 +44,7 @@ namespace Home {
     plants:PlantClass[]
   }
 }
-export default class Home extends React.Component<{}, Home.State> {
+export default class Home extends React.Component<any, Home.State> {
   constructor(props: any) {
     super(props);
     this.state = { plants: [] }
@@ -67,7 +67,6 @@ export default class Home extends React.Component<{}, Home.State> {
                 return (
                   <Mutation mutation={CREATE_PLANT} refetchQueries={() => ['getPlants']}>
                     {(createPlant, {data: plantData}) => {
-                      console.log(plantData)
                       const addPlant = () => {
                         createPlant({variables: { 
                           name: 'Pedro', 
@@ -76,7 +75,10 @@ export default class Home extends React.Component<{}, Home.State> {
                         }})
                       }
                       return (
-                        <PlantList plants={plants} addPlant={addPlant} onSelect={()=>{ /**/ }}/>
+                        <PlantList 
+                          plants={plants} 
+                          addPlant={addPlant} 
+                          onSelect={(plantId)=>{ this.props.navigation.push('PlantProfile', {plantId}) }}/>
                       )
                     }}
                   </Mutation>

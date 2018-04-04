@@ -53,7 +53,9 @@ export default class Plant {
   public get name(): string {
     return this._name
   }
-
+  public get moments(): any[] {
+    return this._moments
+  }
   public get coverPhotoUri(): string {
     for (let moment of this._moments) {
       if (moment.imageUri) {

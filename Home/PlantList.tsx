@@ -8,7 +8,7 @@ namespace PlantList {
   export interface Props {
     addPlant: () => void
     plants: PlantClass[]
-    onSelect: (plant: PlantClass) => void
+    onSelect: (plantId: string) => void
   }
 }
 export default class PlantList extends React.Component<PlantList.Props, any> {
@@ -19,7 +19,7 @@ export default class PlantList extends React.Component<PlantList.Props, any> {
       plants ? 
       <ScrollView>
         <View style={styles.container}> 
-          {plants.map(plant => (<Plant key={plant.id} name={plant.name} uri={plant.coverPhotoUri} shared={plant.shared} onPress={() => onSelect(plant)}/>))}
+          {plants.map(plant => (<Plant key={plant.id} name={plant.name} uri={plant.coverPhotoUri} shared={plant.shared} onPress={() => onSelect(plant.id)}/>))}
           <Plant onPress={() => addPlant()}/>
         </View> 
       </ScrollView>

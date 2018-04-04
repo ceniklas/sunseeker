@@ -11,6 +11,7 @@ import { ApolloClient } from 'apollo-client';
 import { HttpLink } from 'apollo-link-http';
 import { InMemoryCache } from 'apollo-cache-inmemory'
 import { ApolloProvider } from 'react-apollo'
+import PlantProfile from './PlantProfile/PlantProfile'
 import jwtDecode from 'jwt-decode'
 
 const client = new ApolloClient({
@@ -143,5 +144,6 @@ const SNavigator = StackNavigator({
         fontWeight: 'bold',
       }
     }
- }
+ },
+ PlantProfile: {screen: PlantProfile}
 })
