@@ -1,9 +1,10 @@
+import AddPlant from './AddPlant/AddPlant';
 import Friends from './Friends/Friends'
-import Add from './Add/Add'
+import Something from './Something/Something'
 import Settings from './Settings/Settings'
 import Home from './Home/Home'
 import Login from './Login'
-import * as React from 'react'
+import * as React from 'react';
 import { StyleSheet, Text, View, StatusBar, YellowBox, AsyncStorage } from 'react-native'
 import { TabNavigator, TabBarBottom, StackNavigator } from 'react-navigation'
 import Ionicons from 'react-native-vector-icons/Ionicons'
@@ -14,6 +15,23 @@ import { ApolloProvider } from 'react-apollo'
 import PlantProfile from './PlantProfile/PlantProfile'
 import jwtDecode from 'jwt-decode'
 
+const ignoredWarnings = [
+  'Warning: componentWillMount is deprecated',
+  'Warning: componentWillReceiveProps is deprecated',
+  'Warning: componentWillReceiveProps',
+  'Warning: componentWillUpdate is deprecated',
+  'Module RCTImageLoader requires',
+  'Setting a timer',
+]
+const realLogWarn = console.warn
+console.warn = (text: any) => {
+  for(let w of ignoredWarnings) {
+    if(text.indexOf(w) > -1) {
+      return
+    }
+  }
+  realLogWarn(text)
+}
 const client = new ApolloClient({
   // By default, this client will send queries to the
   //  `/graphql` endpoint on the same host
@@ -23,14 +41,7 @@ const client = new ApolloClient({
   cache: new InMemoryCache(),
 })
 
-YellowBox.ignoreWarnings([
-  'Warning: componentWillMount is deprecated',
-  'Warning: componentWillReceiveProps is deprecated',
-  'Warning: componentWillReceiveProps',
-  'Warning: componentWillUpdate is deprecated',
-  'Module RCTImageLoader requires',
-  'Setting a timer',
-])
+YellowBox.ignoreWarnings(ignoredWarnings)
 
 export const UserContext = React.createContext<any>()
 
@@ -96,7 +107,7 @@ const TNavigator = TabNavigator({
   Home: { 
     screen: Home
   },
-  Add: { screen: Add },
+  Something: { screen: Something },
   Friends: { screen: Friends },
   Settings: { screen: Settings },
 }, {
@@ -109,8 +120,8 @@ const TNavigator = TabNavigator({
         iconName = `ios-information-circle${focused ? '' : '-outline'}`
       } else if (routeName === 'Settings') {
         iconName = `ios-options${focused ? '' : '-outline'}`
-      } else if (routeName === 'Add') {
-        iconName = `ios-add-circle${focused ? '' : '-outline'}`
+      } else if (routeName === 'Something') {
+        iconName = `ios-apps${focused ? '' : '-outline'}`
       }else if (routeName === 'Friends') {
         iconName = `ios-walk${focused ? '' : '-outline'}`
       }
@@ -143,6 +154,9 @@ const SNavigator = StackNavigator({
   },
   Friend: {
     screen: Home
+  },
+  AddPlant: {
+    screen: AddPlant
   }
 }, {
   navigationOptions: ({navigation}) => ({ 

@@ -30,16 +30,7 @@ const GET_PLANTS = gql`
     }
   }
 `
-const CREATE_PLANT = gql`
-  mutation createNewPlant($moments: [PlantmomentsMoment!], $name: String!, $userId: ID!) {
-    createPlant(moments: $moments, name: $name, userId: $userId) {
-      id
-      moments {
-        id
-      }
-    }
-  }
-`
+
 
 namespace Home {
   export interface State {
@@ -61,42 +52,29 @@ export default class Home extends React.Component<any, Home.State> {
           const variables =  (params && params.userId) ? {userId: params.userId} : {auth0UserId: user.sub}
           return (
           <Query query={GET_PLANTS} variables={variables}>
-              {({ loading, error, data }) => {
-                if (loading) {
-                  return <Text>Loading...</Text>
-                }
-                if(data && data.User) {
-                  plants.splice(0, plants.length)
-                  data.User.plants
-                  .filter((plant: any) => data.User.auth0UserId !== user.sub ? plant.public : true)
-                  .map((plant: any) => {
-                    plants.push(new PlantClass(plant))
-                  })
-                }
-                return (
-                  <Mutation mutation={CREATE_PLANT} refetchQueries={() => ['getPlants']}>
-                    {(createPlant, {data: plantData}) => {
-                      const addPlant = () => {
-                        createPlant({variables: { 
-                          name: 'Pedro', 
-                          moments: [{description: 'Plant created! Hurray!'}],
-                          userId: data.User.id
-                        }})
-                      }
-                      return (
-                        <PlantList
-                          addButton={data.User.auth0UserId !== user.sub ? false : true} 
-                          plants={plants} 
-                          addPlant={addPlant} 
-                          onSelect={(plantId)=>{ this.props.navigation.push('PlantProfile', {plantId}) }}/>
-                      )
-                    }}
-                  </Mutation>
+            {({ loading, error, data }) => {
+              if (loading) {
+                return <Text>Loading...</Text>
+              }
+              if(data && data.User) {
+                plants.splice(0, plants.length)
+                data.User.plants
+                .filter((plant: any) => data.User.auth0UserId !== user.sub ? plant.public : true)
+                .map((plant: any) => {
+                  plants.push(new PlantClass(plant))
+                })
+              }
+              return (
+                <PlantList
+                  addButton={data.User.auth0UserId !== user.sub ? false : true} 
+                  plants={plants} 
+                  addPlant={() => this.props.navigation.push('AddPlant', {userId: data.User.id})} 
+                  onSelect={(plantId)=>{ this.props.navigation.push('PlantProfile', {plantId}) }}/>
+              )
+            }}
+          </Query>
                 )
               }}
-            
-          </Query>
-        )}}
       </UserContext.Consumer>
       
     )

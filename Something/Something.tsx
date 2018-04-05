@@ -1,9 +1,9 @@
 import * as React from 'react'
 import { View, Text, StyleSheet } from 'react-native'
 
-export default class Add extends React.Component<{}> {
+export default class Something extends React.Component<{}> {
   render(){
-    return <View style={styles.container}><Text>Add</Text></View>
+    return <View style={styles.container}><Text>Something</Text></View>
   }
 }
 
