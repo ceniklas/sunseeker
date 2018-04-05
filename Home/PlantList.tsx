@@ -9,18 +9,19 @@ namespace PlantList {
     addPlant: () => void
     plants: PlantClass[]
     onSelect: (plantId: string) => void
+    addButton: boolean
   }
 }
 export default class PlantList extends React.Component<PlantList.Props, any> {
 
   render() {
-    const {plants, onSelect, addPlant} = this.props
+    const {plants, onSelect, addPlant, addButton} = this.props
     return (
       plants ? 
       <ScrollView>
         <View style={styles.container}> 
           {plants.map(plant => (<Plant key={plant.id} name={plant.name} uri={plant.coverPhotoUri} shared={plant.shared} onPress={() => onSelect(plant.id)}/>))}
-          <Plant onPress={() => addPlant()}/>
+          {addButton ? <Plant onPress={() => addPlant()}/> : null}
         </View> 
       </ScrollView>
       : 

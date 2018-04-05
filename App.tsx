@@ -26,6 +26,7 @@ const client = new ApolloClient({
 YellowBox.ignoreWarnings([
   'Warning: componentWillMount is deprecated',
   'Warning: componentWillReceiveProps is deprecated',
+  'Warning: componentWillReceiveProps',
   'Warning: componentWillUpdate is deprecated',
   'Module RCTImageLoader requires',
   'Setting a timer',
@@ -92,7 +93,9 @@ export default class App extends React.Component<{}, any> {
 }
 
 const TNavigator = TabNavigator({
-  Home: { screen: Home },
+  Home: { 
+    screen: Home
+  },
   Add: { screen: Add },
   Friends: { screen: Friends },
   Settings: { screen: Settings },
@@ -134,16 +137,21 @@ const styles = StyleSheet.create({
 const SNavigator = StackNavigator({
   Home: {
     screen: TNavigator,
-    navigationOptions: { 
-      title: 'Header title', 
-      headerStyle: {
-        backgroundColor: '#40C19A'
-      },
-      headerTintColor: '#fff',
-      headerTitleStyle: {
-        fontWeight: 'bold',
-      }
-    }
  },
- PlantProfile: {screen: PlantProfile}
+ PlantProfile: {
+   screen: PlantProfile
+  },
+  Friend: {
+    screen: Home
+  }
+}, {
+  navigationOptions: ({navigation}) => ({ 
+    headerStyle: {
+      backgroundColor: '#40C19A'
+    },
+    headerTintColor: '#fff',
+    headerTitleStyle: {
+      fontWeight: 'bold',
+    }
+  })
 })

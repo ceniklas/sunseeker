@@ -10,12 +10,14 @@ import gql from 'graphql-tag'
 import { Query, Mutation } from 'react-apollo'
 
 const GET_PLANTS = gql`
-  query getPlants($auth0UserId: String!){
-    User(auth0UserId: $auth0UserId) {
+  query getPlants($auth0UserId: String, $userId: ID){
+    User(auth0UserId: $auth0UserId, id: $userId) {
       id
+      auth0UserId
       plants{
         id
         name
+        public
         sharedUsers{
           id
         }
@@ -52,15 +54,22 @@ export default class Home extends React.Component<any, Home.State> {
 
   render() {
     const plants: PlantClass[] = []
+    const {navigation: {state: {params}}} = this.props
     return (
       <UserContext.Consumer>
         {({user}) => {
-          return(
-          <Query query={GET_PLANTS} variables={{auth0UserId: user.sub}}>
+          const variables =  (params && params.userId) ? {userId: params.userId} : {auth0UserId: user.sub}
+          return (
+          <Query query={GET_PLANTS} variables={variables}>
               {({ loading, error, data }) => {
+                if (loading) {
+                  return <Text>Loading...</Text>
+                }
                 if(data && data.User) {
                   plants.splice(0, plants.length)
-                  data.User.plants.map((plant: any) => {
+                  data.User.plants
+                  .filter((plant: any) => data.User.auth0UserId !== user.sub ? plant.public : true)
+                  .map((plant: any) => {
                     plants.push(new PlantClass(plant))
                   })
                 }
@@ -75,7 +84,8 @@ export default class Home extends React.Component<any, Home.State> {
                         }})
                       }
                       return (
-                        <PlantList 
+                        <PlantList
+                          addButton={data.User.auth0UserId !== user.sub ? false : true} 
                           plants={plants} 
                           addPlant={addPlant} 
                           onSelect={(plantId)=>{ this.props.navigation.push('PlantProfile', {plantId}) }}/>
