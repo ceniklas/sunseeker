@@ -34,7 +34,7 @@ export default class Schedule extends React.Component<any> {
                 // listData = data.User.friends.map((friend: any) => ({...friend, key: friend.nickname}))
                 listData.splice(0, listData.length)
                 for(let friend of data.User.friends) {
-                  listData.push({key: friend.nickname, ...friend})
+                  listData.push({key: friend.id, ...friend})
                 }
                 return (
                   <FlatList data={listData} renderItem={({item}) => {
