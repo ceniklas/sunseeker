@@ -37,7 +37,7 @@ export default class Login extends React.Component<Login.Props, any> {
   constructor(props:any) {
     super(props)
     const { onLoginSuccess } = this.props
-    this.state = {result: null, token: null}
+    this.state = {token: null}
   }
   loginWithAuth0 = async () => {
     const redirectUrl = AuthSession.getRedirectUrl()
@@ -61,7 +61,6 @@ export default class Login extends React.Component<Login.Props, any> {
         || 'something went wrong while logging in');
       return;
     }
-    this.setState({result: responseObj})
     const encodedToken = responseObj.id_token
     return encodedToken
   }
@@ -79,7 +78,6 @@ export default class Login extends React.Component<Login.Props, any> {
             }
             return (
               <View style={{ position: 'absolute', bottom: 100, width: '100%', alignItems: 'center', justifyContent: 'flex-end'}}>
-                <Text>{JSON.stringify(this.state.result)}</Text>
                 <TouchableOpacity onPress={() => login()} style={styles.loginButton}>
                   <Text style={styles.buttonText}>Login</Text>
                 </TouchableOpacity>
