@@ -1,4 +1,5 @@
-import * as React from 'react'
+import { uploadFile } from './UploadImage';
+import * as React from 'react';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
 import {View, Text, StyleSheet} from 'react-native'
 import { Camera, Permissions, CameraObject } from 'expo'
@@ -15,12 +16,12 @@ export default class TakePicture extends React.Component<any, any> {
     this.setState({ hasCameraPermission: status === 'granted' });
   }
   render() {
-    
+    const {onPictureTaken} = this.props
     if (!this.state.hasCameraPermission) {
       return <Text>Waiting for camera permission</Text>;
     }
     
-    const snap = async () => {let picture = await this._camera.takePictureAsync()}
+    const snap = async () => {onPictureTaken(await this._camera.takePictureAsync({base64: true, quality: 0.1 }))}
     return (
       <Camera style={styles.camera} ref={(ref: any) => { this._camera = ref }}>
         <View style={styles.snapButtonContainer}>
