@@ -12,6 +12,7 @@ namespace Plant {
 const size = 90
 export default class Plant extends React.Component<Plant.Props, any> {
   render(){
+    setTimeout(()=>{this.setState({a: 1})}, 1000)
     const {name, uri, onPress, shared} = this.props
     return name || uri ? (
        

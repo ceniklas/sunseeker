@@ -38,12 +38,24 @@ export default class Plant {
   private _images: IIMages
   private _moments: IMoment[]
   private _sharedUsers: any[]
+  private _coverPhoto: string
 
   constructor(plantObject:IPlant) {
     this._id = plantObject.id
     this._name = plantObject.name
     this._sharedUsers = plantObject.sharedUsers
     this._moments = plantObject.moments
+    this._coverPhoto = 'https://i.imgur.com/sikAQTE.png'
+    const getCoverPhoto = async () => {
+      for (let moment of this._moments) {
+        if (moment.imageUri) {
+          const image = await fetch(moment.imageUri)
+          // this._coverPhoto = (await image.text())
+          console.log(this._coverPhoto)
+        }
+      }
+    }
+    getCoverPhoto()
   }
 
   public get id(): string {
@@ -57,12 +69,7 @@ export default class Plant {
     return this._moments
   }
   public get coverPhotoUri(): string {
-    for (let moment of this._moments) {
-      if (moment.imageUri) {
-        return moment.imageUri
-      }
-    }
-    return 'https://i.imgur.com/sikAQTE.png'
+    return this._coverPhoto
   }
 
   get shared(): boolean {
